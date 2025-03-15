@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 from io import BytesIO
 
 # Function to load data
@@ -38,27 +36,6 @@ def detect_and_display_dtypes(df):
                 st.error(f"Error converting {col} to {new_dtype}: {e}")
     return df
 
-# Function to plot numerical data
-def plot_numerical_data(df, col, plot_type):
-    st.write(f"### {plot_type.capitalize()} Plot for {col}")
-    fig, ax = plt.subplots()
-    if plot_type == "box plot":
-        sns.boxplot(df[col], ax=ax)
-    elif plot_type == "line plot":
-        sns.lineplot(data=df, x=df.index, y=col, ax=ax)
-    elif plot_type == "violin plot":
-        sns.violinplot(df[col], ax=ax)
-    st.pyplot(fig)
-    return fig
-
-# Function to plot categorical data
-def plot_categorical_data(df, col):
-    st.write(f"### Frequency Plot for {col}")
-    fig, ax = plt.subplots()
-    sns.countplot(y=df[col], ax=ax)
-    st.pyplot(fig)
-    return fig
-
 # Function to calculate statistics
 def calculate_statistics(df):
     st.write("### Statistics for Numerical Variables")
@@ -86,15 +63,11 @@ def calculate_statistics(df):
     else:
         st.write("No date columns found.")
 
-# Function to create an Excel file with results and plots
-def create_excel(df, plots):
+# Function to create an Excel file with results
+def create_excel(df):
     output = BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         df.to_excel(writer, sheet_name='Data', index=False)
-        for i, (col, fig) in enumerate(plots.items()):
-            fig.savefig(f"{col}_plot.png")
-            worksheet = writer.book.add_worksheet(f"{col}_plot")
-            worksheet.insert_image('A1', f"{col}_plot.png")
     output.seek(0)
     return output
 
@@ -117,37 +90,16 @@ def main():
             # Calculate statistics
             calculate_statistics(df)
 
-            # Plotting options
-            plots = {}
-            numerical_cols = df.select_dtypes(include=[np.number]).columns
-            categorical_cols = df.select_dtypes(include=["object"]).columns
-
-            if len(numerical_cols) > 0:
-                st.write("### Plotting Options for Numerical Columns")
-                selected_num_col = st.selectbox("Select a numerical column to plot:", numerical_cols)
-                plot_type = st.selectbox("Select plot type:", ["box plot", "line plot", "violin plot"])
-                if st.button("Plot"):
-                    fig = plot_numerical_data(df, selected_num_col, plot_type)
-                    plots[selected_num_col] = fig
-
-            if len(categorical_cols) > 0:
-                st.write("### Plotting Options for Categorical Columns")
-                selected_cat_col = st.selectbox("Select a categorical column to plot:", categorical_cols)
-                if st.button("Plot Frequency"):
-                    fig = plot_categorical_data(df, selected_cat_col)
-                    plots[selected_cat_col] = fig
-
             # Download option
-            if len(plots) > 0:
-                st.write("### Download Results and Plots")
-                if st.button("Download Excel"):
-                    excel_file = create_excel(df, plots)
-                    st.download_button(
-                        label="Download Excel",
-                        data=excel_file,
-                        file_name="analysis_results.xlsx",
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    )
+            st.write("### Download Modified Data")
+            if st.button("Download Excel"):
+                excel_file = create_excel(df)
+                st.download_button(
+                    label="Download Excel",
+                    data=excel_file,
+                    file_name="modified_data.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
 
 if __name__ == "__main__":
     main()
