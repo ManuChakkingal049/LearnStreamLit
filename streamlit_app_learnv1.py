@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from io import BytesIO
 
 # Function to load data
 def load_data(file):
@@ -18,6 +17,9 @@ def load_data(file):
 def detect_and_display_dtypes(df):
     st.write("### Detected Data Types")
     dtypes = df.dtypes
+    dtype_changes = {}  # Store changes to data types
+
+    # Display data types and provide options to change
     for col in df.columns:
         current_dtype = str(dtypes[col])
         new_dtype = st.selectbox(
@@ -27,13 +29,18 @@ def detect_and_display_dtypes(df):
             key=f"dtype_{col}"
         )
         if new_dtype != current_dtype:
-            try:
-                if new_dtype == "datetime64[ns]":
-                    df[col] = pd.to_datetime(df[col], errors='coerce')
-                else:
-                    df[col] = df[col].astype(new_dtype)
-            except Exception as e:
-                st.error(f"Error converting {col} to {new_dtype}: {e}")
+            dtype_changes[col] = new_dtype
+
+    # Apply changes to data types
+    for col, new_dtype in dtype_changes.items():
+        try:
+            if new_dtype == "datetime64[ns]":
+                df[col] = pd.to_datetime(df[col], errors='coerce')
+            else:
+                df[col] = df[col].astype(new_dtype)
+        except Exception as e:
+            st.error(f"Error converting {col} to {new_dtype}: {e}")
+
     return df
 
 # Function to calculate statistics
@@ -63,13 +70,23 @@ def calculate_statistics(df):
     else:
         st.write("No date columns found.")
 
-# Function to create an Excel file with results
-def create_excel(df):
-    output = BytesIO()
-    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-        df.to_excel(writer, sheet_name='Data', index=False)
-    output.seek(0)
-    return output
+# Function to plot data using Streamlit's built-in functions
+def plot_data(df):
+    st.write("### Data Visualization")
+
+    # Plot numerical columns
+    numerical_cols = df.select_dtypes(include=[np.number]).columns
+    if len(numerical_cols) > 0:
+        st.write("#### Numerical Columns")
+        selected_num_col = st.selectbox("Select a numerical column to plot:", numerical_cols)
+        st.line_chart(df[selected_num_col])
+
+    # Plot categorical columns
+    categorical_cols = df.select_dtypes(include=["object"]).columns
+    if len(categorical_cols) > 0:
+        st.write("#### Categorical Columns")
+        selected_cat_col = st.selectbox("Select a categorical column to plot:", categorical_cols)
+        st.bar_chart(df[selected_cat_col].value_counts())
 
 # Main function
 def main():
@@ -90,16 +107,8 @@ def main():
             # Calculate statistics
             calculate_statistics(df)
 
-            # Download option
-            st.write("### Download Modified Data")
-            if st.button("Download Excel"):
-                excel_file = create_excel(df)
-                st.download_button(
-                    label="Download Excel",
-                    data=excel_file,
-                    file_name="modified_data.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                )
+            # Plot data
+            plot_data(df)
 
 if __name__ == "__main__":
     main()
