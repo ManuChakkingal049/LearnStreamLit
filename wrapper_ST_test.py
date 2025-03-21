@@ -4,6 +4,22 @@ import streamlit as st
 def stress_test_wrapper():
     st.title('Stress Test Dashboard')
 
+    # Allow file upload of datasets
+    st.header("Upload Datasets")
+    uploaded_files = st.file_uploader("Upload your datasets", accept_multiple_files=True)
+
+    # Check if files are uploaded
+    if uploaded_files:
+        # Save the uploaded files in session state for later use in specific tests
+        if 'uploaded_data' not in st.session_state:
+            st.session_state.uploaded_data = []
+
+        # Append uploaded files to session state
+        for file in uploaded_files:
+            st.session_state.uploaded_data.append(file)
+        
+        st.success("Files uploaded successfully!")
+
     # List of stress tests
     tests = {
         'ST1 Stress Test': {
@@ -34,6 +50,11 @@ def stress_test_wrapper():
             st.write(f"### {test_name}")
             st.write(test_info['description'])
             st.write(f"Click [here]({test_info['link']}) to access the full Streamlit app for this stress test.")
+            st.write("The uploaded datasets will be automatically passed to the respective app.")
 
+    st.write("### Standalone Option")
+    st.write("Alternatively, you can choose to load the datasets manually if you are running a standalone app.")
+
+# Running the wrapper function
 if __name__ == '__main__':
     stress_test_wrapper()
