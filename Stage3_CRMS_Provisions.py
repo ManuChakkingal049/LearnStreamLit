@@ -32,8 +32,12 @@ To perform the calculation, the following columns are required in your input dat
 
 ### Input Data Format:
 Below is the sample format for the input data that you should upload:
+""")
+# Use st.image() to display an image of the input data format
+st.image("https://github.com/ManuChakkingal049/LearnStreamLit/blob/main/input_data_sample.png?raw=true", caption="Input Data Format Example")
 
-![Input Data Format](https://github.com/ManuChakkingal049/LearnStreamLit/blob/main/input_data_sample.png)  # Replace with the actual image path or URL
+st.markdown("""
+
 ### Key Steps:
 
 1. **Unsecured Portion Calculation**: 
