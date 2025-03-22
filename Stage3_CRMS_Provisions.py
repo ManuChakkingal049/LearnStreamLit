@@ -8,6 +8,28 @@ st.markdown("""
 
 This app calculates the minimum provision required for Stage 3 (Wholesale Obligors) under the CRMS guidelines published by the Central Bank of the UAE (CBUAE). The calculation follows the steps outlined in **Article 9.23 - Minimum provision for Stage 3 (Wholesale Obligors)**.
 
+### Required Columns:
+To perform the calculation, the following columns are required in your input data (CSV file):
+
+1. **Classification Date**: 
+   - This represents the classification date of the loan and serves as the **default classification date**.
+   - It is used to determine the age of the loan (how long it has been classified) and helps in calculating the minimum provision.
+   
+2. **TOTAL OS** (Total Outstanding):
+   - This represents the total outstanding loan amount.
+   
+3. **Collateral after H.C.** (Collateral after Haircut):
+   - This represents the value of the collateral after applying a haircut, which reduces its value to account for risks like market fluctuations.
+   
+4. **Unsecured Portion Covered by ECF/DCF**:
+   - This represents the portion of the unsecured loan that is covered by **Expected Cash Flows (ECF)** or **Discounted Cash Flows (DCF)**.
+   - This portion is excluded from the provision calculation as it is already covered by cash flows.
+   
+5. **Existing ECL held Q3'24**:
+   - This represents the **Existing ECL held in Q3 2024**. 
+   - It is used as input to ensure that no **ECL release** occurs solely due to the implementation of the new CRMS guidelines.
+   - If the **outstanding loan (OS)** decreases or the **collateral value increases**, it might lead to a reduction in ECL. The **ECL from Q3 2024** acts as a safeguard to avoid any unintended ECL release.
+
 ### Key Steps:
 
 1. **Unsecured Portion Calculation**: 
