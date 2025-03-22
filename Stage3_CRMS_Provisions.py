@@ -30,6 +30,10 @@ To perform the calculation, the following columns are required in your input dat
    - It is used as input to ensure that no **ECL release** occurs solely due to the implementation of the new CRMS guidelines.
    - If the **outstanding loan (OS)** decreases or the **collateral value increases**, it might lead to a reduction in ECL. The **ECL from Q3 2024** acts as a safeguard to avoid any unintended ECL release.
 
+### Input Data Format:
+Below is the sample format for the input data that you should upload:
+
+![Input Data Format](https://github.com/ManuChakkingal049/LearnStreamLit/blob/main/input_data_sample.png)  # Replace with the actual image path or URL
 ### Key Steps:
 
 1. **Unsecured Portion Calculation**: 
