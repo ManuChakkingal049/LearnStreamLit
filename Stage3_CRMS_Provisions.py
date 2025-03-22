@@ -20,8 +20,16 @@ def calculate_provisions(df, crms_issue_date_str, run_date_str):
     crms_issue_date = convert_to_date(crms_issue_date_str)
     run_date = convert_to_date(run_date_str)
     
+    # Fill missing values in key columns with 0 (or use other default values based on the use case)
+    df['TOTAL OS'] = df['TOTAL OS'].fillna(0)
+    df['Collateral after H.C'] = df['Collateral after H.C'].fillna(0)
+    df['Unsecured Portion Covered by ECF/DCF'] = df['Unsecured Portion Covered by ECF/DCF'].fillna(0)
+    df['Existing ECL held Q3\'24'] = df['Existing ECL held Q3\'24'].fillna(0)
+    
+    # Ensure 'Classification Date' column is in datetime format, fill any NaT (Not a Time) values with a default date if necessary
+    df['Classification Date'] = pd.to_datetime(df['Classification date'], errors='coerce').fillna(pd.to_datetime('01-Jan-2000'))
+
     # Calculate the years since NPL
-    df['Classification Date'] = pd.to_datetime(df['Classification date'], errors='coerce')
     df['Years Since NPL'] = df['Classification Date'].apply(lambda x: calculate_years_since_npl(x, run_date))
     
     # Calculate Unsecured Portion
