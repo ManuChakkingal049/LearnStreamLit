@@ -23,7 +23,7 @@ To perform the calculation, the following columns are required in your input dat
    
 4. **Unsecured Portion Covered by ECF/DCF**:
    - This represents the portion of the unsecured loan that is covered by **Expected Cash Flows (ECF)** or **Discounted Cash Flows (DCF)**.
-   - This portion is excluded from the provision calculation as it is already covered by cash flows.
+   
    
 5. **Existing ECL held Q3'24**:
    - This represents the **Existing ECL held in Q3 2024**. 
