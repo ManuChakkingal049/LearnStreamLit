@@ -2,6 +2,61 @@ import pandas as pd
 from datetime import datetime, timedelta
 import streamlit as st
 
+# Write-up explaining the calculation
+st.markdown("""
+# Minimum Provision Calculation based on CRMS (CBUAE Guidelines)
+
+This app calculates the minimum provision required for Stage 3 (Wholesale Obligors) under the CRMS guidelines published by the Central Bank of the UAE (CBUAE). The calculation follows the steps outlined in **Article 9.23 - Minimum provision for Stage 3 (Wholesale Obligors)**.
+
+### Key Steps:
+
+1. **Unsecured Portion Calculation**: 
+   - The **Unsecured Portion (as whole)** is calculated by subtracting the **Collateral after H.C.** (haircut) from the **TOTAL OS** (total outstanding loan). 
+   - If this value is negative, it’s set to zero.
+
+2. **Unsecured Portion Covered by ECF/DCF**:
+   - This portion is subtracted from the unsecured portion to calculate the **NET Unsecured Portion (NUSP)**.
+   - If part of the unsecured portion is covered by expected cash flows (ECF/DCF), that part does not require provision.
+
+3. **Provision Calculation for Unsecured Portion**:
+   - **Approach 1**: 
+     - For loans that are **less than 4 years old**, a **25% provision** is applied to the **Unsecured Portion**.
+     - For loans that are **older than 4 years**, a **100% provision** is applied to the **Unsecured Portion**.
+     
+   - **Approach 2**:
+     - **No provision** is required for the portion of the unsecured loan that is **covered by expected cash flows (ECF/DCF)**.
+     - **100% provision** is applied to the portion that is **not covered by expected cash flows**.
+
+   - The final provision for the **Unsecured Portion** is the **maximum** of the provisions calculated from **Approach 1** and **Approach 2**.
+
+4. **NET SECURED Portion Calculation**:
+   - The **NET SECURED Portion** is the minimum value between the **Collateral after H.C.** and the **TOTAL OS** (outstanding loan).
+   
+5. **Provision for SECURED Portion**:
+   - If the loan is **less than 4 years old**, **no provision** is required for the secured portion.
+   - If the loan is **older than 4 years**, a **25% provision** is applied to the **NET SECURED Portion**.
+   
+6. **Final Required Provision/ECL**:
+   - The **final provision required** is the sum of the **Provision for Unsecured Portion** and the **Provision for SECURED Portion**.
+
+7. **Final ECL Calculation**:
+   - The **Final Calculated ECL with Q3 2024 floor** compares the calculated provision with the **Existing ECL held Q3 2024** and ensures that the result is no less than the existing ECL.
+   
+8. **Final ECL with OS considered**:
+   - If the **ratio of Existing ECL to Total OS** exceeds 1, the **Final ECL with OS considered** is calculated as the maximum between the calculated provision and the total outstanding loan.
+   - Otherwise, it takes the maximum between the calculated provision and the existing ECL.
+
+### How This App Works:
+This app performs the above steps to calculate the **minimum provision required** for each loan in the uploaded dataset and provides the results, along with an option to download the updated data.
+
+The app applies the CRMS guidelines for provision calculation and takes into account both the **age of the loan** (for unsecured and secured portions) and whether part of the unsecured portion is **covered by expected cash flows (ECF/DCF)**.
+
+You can upload your dataset (CSV file format), enter the **CRMS Issue Date** and **Run Date**, and click "Calculate Provisions" to get the results.
+
+---
+The calculation logic is implemented using the following code.
+""")
+
 # Load the CSV file into a DataFrame
 def load_data(file_path):
     return pd.read_csv(file_path)
